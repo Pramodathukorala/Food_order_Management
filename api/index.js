@@ -23,8 +23,8 @@ import promotionRouter from "./routes/promotion.routes.js";
 
 dotenv.config();
 const MONGODB_URL =
-  "mongodb+srv://pgmsadeep:1234@cluster0.phudmlq.mongodb.net/fashion?retryWrites=true&w=majority";
-
+  "mongodb+srv://chaminduathukorala:AA20020607@studentmanagement.i6j3dq6.mongodb.net/FoodSwift_db?retryWrites=true&w=majority";
+console.log(MONGODB_URL);
 mongoose
   .connect(MONGODB_URL)
   .then(() => {

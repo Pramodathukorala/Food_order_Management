@@ -12,7 +12,7 @@ import {
   signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { NavLink } from "react-router-dom";
-import logo from "./../assets/img/logo-removebg-preview.png";
+import logo from "./../assets/img/logo_food1-removebg-preview.png";
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Auth state

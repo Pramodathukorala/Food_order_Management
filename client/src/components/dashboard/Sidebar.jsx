@@ -18,7 +18,7 @@ import {
   signOutUserSuccess,
   signOutUserFailure,
 } from "../../redux/user/userSlice";
-import logo from "./../../assets/img/logo-removebg-preview.png";
+import logo from "./../../assets/img/logo_food1-removebg-preview.png";
 
 const sidebarVariants = {
   open: {

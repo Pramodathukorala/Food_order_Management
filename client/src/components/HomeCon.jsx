@@ -11,7 +11,7 @@ export default function HomeCon() {
         </h1>
         <p className=" w-full lg:w-3/4 text-DarkColor font-medium">
         Each dish is a carefully crafted masterpiece,
-         Delivering not just flavor but a reflection of your unique taste.
+        Delivering not just flavor but a reflection of your unique taste.
         </p>
 
         <button className=" bg-ExtraDarkColor text-white px-4 py-2 font-medium active:bg-amber-800">

@@ -1,5 +1,5 @@
 import React from "react";
-import img from "../assets/img/collection.png";
+import img from "../assets/img/collection1.png";
 
 export default function Collection() {
   return (
@@ -12,19 +12,19 @@ export default function Collection() {
       {/* content section */}
       <div className=" w-full lg:w-2/4 space-y-4 pt-5 text-center lg:text-start">
         <h1 className=" text-4xl font-semibold text-ExtraDarkColor">
-          Best Summer Collection
+          Best Summer Feast! 
         </h1>
         <h3 className=" text-lg font-medium text-DarkColor">
-          Sale Get Up To 60% off
+          Enjoy Up to 60% Off on Your Favorite Dishes!
         </h3>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores
-          assumenda sapiente a iste hic explicabo laboriosam praesentium. Harum,
-          aperiam voluptatem!
+          Savor the taste of summer with delicious deals! 
+          Enjoy up to 60% off on your favorite meals. 
+          Order now and indulge in the flavors of the season!
         </p>
 
         <button className=" bg-ExtraDarkColor text-white px-4 py-2 font-medium active:bg-amber-800">
-          Shop Now
+          Order Now
         </button>
       </div>
     </div>

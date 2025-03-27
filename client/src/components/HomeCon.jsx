@@ -1,5 +1,5 @@
 import React from "react";
-import img from "../assets/img/hero.png";
+import img from "../assets/img/hero1.png";
 
 export default function HomeCon() {
   return (
@@ -7,11 +7,11 @@ export default function HomeCon() {
       {/* content section  */}
       <div className=" space-y-4">
         <h1 className=" text-5xl font-semibold leading-tight text-ExtraDarkColor w-full lg:w-3/4">
-          Discovering and Defining Your Own Fashion!
+        Discovering and Defining Your Own Taste!
         </h1>
         <p className=" w-full lg:w-3/4 text-DarkColor font-medium">
-          Each item is a carefully chosen masterpiece, promising not just
-          fashion but a reflection of your unique style.
+        Each dish is a carefully crafted masterpiece,
+         Delivering not just flavor but a reflection of your unique taste.
         </p>
 
         <button className=" bg-ExtraDarkColor text-white px-4 py-2 font-medium active:bg-amber-800">

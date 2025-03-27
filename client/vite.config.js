@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://16.171.225.212/",
+        target: "http://localhost:3000/", // Changed to localhost
         secure: false,
       },
     },
@@ -14,7 +14,7 @@ export default defineConfig({
   build: {
     proxy: {
       "/api": {
-        target: "http://16.171.225.212/",
+        target: "http://localhost:3000/", // Changed to localhost
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace("/api", ""),

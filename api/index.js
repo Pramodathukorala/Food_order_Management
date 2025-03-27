@@ -21,17 +21,56 @@ import inventoryRouter from "./routes/inventory.routs.js";
 //shadini
 import promotionRouter from "./routes/promotion.routes.js";
 
-dotenv.config();
-const MONGODB_URL =
-  "mongodb+srv://chaminduathukorala:AA20020607@studentmanagement.i6j3dq6.mongodb.net/FoodSwift_db?retryWrites=true&w=majority";
-console.log(MONGODB_URL);
+// Get the directory path for the current module
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load env variables with explicit path
+const result = dotenv.config({ path: path.join(__dirname, '.env') });
+
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+  process.exit(1);
+}
+
+// Verify env variables loaded
+const requiredEnvVars = ['MONGODB_URL', 'PORT', 'CLIENT_URL'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars);
+  process.exit(1);
+}
+
+// Debug environment variables
+console.log('Environment variables loaded:', {
+  MONGODB_URL: process.env.MONGODB_URL ? 'defined' : 'undefined',
+  PORT: process.env.PORT,
+  CLIENT_URL: process.env.CLIENT_URL
+});
+
+// Direct MongoDB connection without destructuring
+const MONGODB_URL = process.env.MONGODB_URL;
+if (!MONGODB_URL) {
+  console.error('MONGODB_URL is not defined in environment variables');
+  process.exit(1);
+}
+
+const {
+  PORT = 3000,
+  JWT_SECRET,
+  GMAIL_USER,
+  GMAIL_PASS,
+  CLIENT_URL
+} = process.env;
+
+// MongoDB connection
 mongoose
   .connect(MONGODB_URL)
   .then(() => {
-    console.log("Connected to Mongo DB successfully!!!");
+    console.log("Connected to MongoDB successfully!!!");
   })
   .catch((err) => {
-    console.log("Error connecting to Mongo");
+    console.error("Error connecting to MongoDB:", err.message);
   });
 
 const app = express();
@@ -45,14 +84,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["https://fashio-nexus.vercel.app/"],
+    origin: 'http://localhost:5173',
     methods: ["GET", "POST"],
     credentials: true,
   })
 );
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000!!!");
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}!!!`);
 });
 
 const storage = multer.diskStorage({
@@ -76,8 +115,6 @@ app.post("/api/upload", upload.array("images", 3), (req, res) => {
   const filePaths = req.files.map((file) => `uploads/${file.filename}`);
   res.json({ filePaths });
 });
-
-const __dirname = dirname(fileURLToPath(import.meta.url)); // Get directory name
 
 app.use("/uploads", express.static(join(__dirname, "uploads")));
 
@@ -113,8 +150,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "sadeepmalaka2@gmail.com",
-    pass: "bfxr wzmt jalb grxp",
+    user: GMAIL_USER,
+    pass: GMAIL_PASS,
   },
 });
 

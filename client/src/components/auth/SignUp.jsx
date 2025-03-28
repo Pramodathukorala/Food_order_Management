@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEnvelope, FaUser, FaLock, FaTimes, FaSpinner } from "react-icons/fa";
-import OtpValidationPopup from "./OtpValidationPopup";
 
 export default function SignUp({ onClose, onSignIn }) {
   const [formData, setFormData] = useState({
@@ -11,7 +10,6 @@ export default function SignUp({ onClose, onSignIn }) {
     password: "",
     repeatPassword: "",
   });
-  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -21,19 +19,11 @@ export default function SignUp({ onClose, onSignIn }) {
 
   const validateForm = () => {
     if (!formData.email.includes("@")) {
-      Swal.fire(
-        "Invalid Email",
-        "Please enter a valid email address.",
-        "error"
-      );
+      Swal.fire("Invalid Email", "Please enter a valid email address.", "error");
       return false;
     }
     if (formData.password.length < 8) {
-      Swal.fire(
-        "Weak Password",
-        "Password must be at least 8 characters long.",
-        "error"
-      );
+      Swal.fire("Weak Password", "Password must be at least 8 characters long.", "error");
       return false;
     }
     if (formData.password !== formData.repeatPassword) {
@@ -49,65 +39,6 @@ export default function SignUp({ onClose, onSignIn }) {
 
     try {
       setLoading(true);
-      const response = await fetch("/api/auth/sendotp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const data = await response.json();
-        if (data.success) {
-          setIsOtpModalOpen(true);
-          Swal.fire("OTP sent!", "Check your email for the OTP.", "success");
-        } else {
-          Swal.fire("Error", data.message, "error");
-        }
-      } else {
-        const errorText = await response.text();
-        Swal.fire("Error", `Unexpected response format: ${errorText}`, "error");
-      }
-    } catch (error) {
-      Swal.fire("Error", `Sign Up Error: ${error.message}`, "error");
-      console.error("Sign Up Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (otp) => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/auth/verifyotp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, otp }),
-      });
-
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const data = await res.json();
-        if (data.success) {
-          await handleSignUp();
-        } else {
-          Swal.fire("Error", data.message, "error");
-        }
-      } else {
-        const errorText = await res.text();
-        Swal.fire("Error", `Unexpected response format: ${errorText}`, "error");
-      }
-    } catch (error) {
-      Swal.fire("Error", `Verification Error: ${error.message}`, "error");
-      console.error("Verification Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignUp = async () => {
-    try {
-      setLoading(true);
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,22 +46,15 @@ export default function SignUp({ onClose, onSignIn }) {
       });
 
       const data = await res.json();
-      if (data != null) {
-        Swal.fire(
-          "Success",
-          "Your profile was created successfully!",
-          "success"
-        ).then(() => {
-          onClose();
-          onSignIn();
-        });
-        setIsOtpModalOpen(false);
+      
+      if (data.success) {
+        Swal.fire("Success", "Registration successful!", "success");
+        onSignIn(); // Switch to sign in form
       } else {
-        Swal.fire("Error", data.message, "error");
+        Swal.fire("Error", data.message || "Registration failed", "error");
       }
     } catch (error) {
-      Swal.fire("Error", `Registration Error: ${error.message}`, "error");
-      console.error("Registration Error:", error);
+      Swal.fire("Error", error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -232,12 +156,6 @@ export default function SignUp({ onClose, onSignIn }) {
           </motion.p>
         </motion.div>
       </motion.div>
-      {isOtpModalOpen && (
-        <OtpValidationPopup
-          onClose={() => setIsOtpModalOpen(false)}
-          onVerifyOtp={handleVerifyOtp}
-        />
-      )}
     </AnimatePresence>
   );
 }

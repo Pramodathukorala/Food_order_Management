@@ -18,7 +18,7 @@ router.delete("/delete-user/:id", deleteUserByid);
 router.get("/test", test);
 router.post("/add", addUser);
 router.get("/search", getUserSearch);
-router.post("/update/:id", veryfyTocken, updateUser);
+router.put("/update/:id", veryfyTocken, updateUser);
 router.delete("/delete/:id", veryfyTocken, deleteUser);
 router.get("/:id", veryfyTocken, getUser);
 

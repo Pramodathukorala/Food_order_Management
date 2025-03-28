@@ -73,37 +73,41 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserstart());
+
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          _id: currentUser._id // Send user ID in body
+        }),
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(updateUserFailure(data.message));
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: `${error}`,
-        });
-        return;
+      
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update profile');
       }
+
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
       Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Profile updated successfully",
+        position: 'top-end',
+        icon: 'success',
+        title: 'Profile updated successfully',
         showConfirmButton: false,
         timer: 1500,
       });
     } catch (error) {
+      console.error('Update error:', error);
       dispatch(updateUserFailure(error.message));
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${error}`,
+        icon: 'error',
+        title: 'Update Failed',
+        text: error.message || 'Could not update profile',
       });
     }
   };

@@ -9,6 +9,7 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
   const [customer, setCustomer] = useState(order.customerInfo || {});
   const [delivery, setDelivery] = useState(order.deliveryInfo || {});
   const [items, setItems] = useState(order.items || []);
+  const [status, setStatus] = useState(order.status || "Pending");
 
   const handleInputChange = (e, field, isCustomer = true) => {
     const { name, value } = e.target;
@@ -25,6 +26,13 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
     setItems(updatedItems);
   };
 
+  const calculateTotal = () => {
+    return items.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0
+    );
+  };
+
   const handleUpdate = async () => {
     try {
       const updatedOrder = {
@@ -32,6 +40,7 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
         customerInfo: customer,
         deliveryInfo: delivery,
         items: items,
+        status: status,
       };
 
       const response = await axios.put(
@@ -57,9 +66,19 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
       >
         <SimpleBar style={{ maxHeight: "80vh", width: "100%" }}>
           <div className="bg-PrimaryColor rounded-lg shadow-lg p-8 max-w-4xl w-full">
-            <h2 className="text-2xl font-bold mb-6 text-darkColor">
-              Edit Order
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-darkColor">Edit Order</h2>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="p-2 border border-secondaryColor rounded"
+              >
+                <option value="Pending">Pending</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Ready">Ready</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+            </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
@@ -132,31 +151,45 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                   key={index}
                   className="border border-secondaryColor p-4 mb-4 rounded-lg"
                 >
-                  <h4 className="font-semibold mb-2 text-darkColor">
-                    Item Name: {item.title}
-                  </h4>
-                  <label>Size: </label>
-                  <input
-                    type="text"
-                    value={item.size || ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "size", e.target.value)
-                    }
-                    className="w-full p-3 border border-secondaryColor rounded mb-2"
-                    placeholder="Size"
-                  />
-                  <label>Color: </label>
-                  <input
-                    type="color"
-                    value={item.color || ""}
-                    onChange={(e) =>
-                      handleItemChange(index, "color", e.target.value)
-                    }
-                    className="w-6 h-6 border border-none rounded-3xl"
-                    placeholder="Color"
-                  />
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-semibold text-darkColor">{item.title}</h4>
+                    <span className="text-darkColor font-medium">
+                      ${(item.price * (item.quantity || 1)).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-1">Quantity:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity || 1}
+                        onChange={(e) =>
+                          handleItemChange(index, "quantity", parseInt(e.target.value))
+                        }
+                        className="w-full p-2 border border-secondaryColor rounded"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Special Instructions:</label>
+                      <textarea
+                        value={item.instructions || ""}
+                        onChange={(e) =>
+                          handleItemChange(index, "instructions", e.target.value)
+                        }
+                        className="w-full p-2 border border-secondaryColor rounded"
+                        placeholder="E.g., No spice, extra sauce"
+                        rows="2"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
+              <div className="text-right mt-4">
+                <span className="text-xl font-bold text-darkColor">
+                  Total: ${calculateTotal().toFixed(2)}
+                </span>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-2">

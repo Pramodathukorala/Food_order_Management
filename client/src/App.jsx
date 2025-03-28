@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home"; // Import the Home component// Import the Dashboard component
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import PrivateAdmin from "./components/private/PrivateAdmin";
-import FashionItem from "./pages/order/FashionItem";
+import FoodItem from "./pages/order/FoodItem";
 import Cart from "./pages/order/Cart";
 import Checkout from "./pages/order/Checkout";
 import MyOrders from "./pages/order/Myorders";
@@ -36,7 +36,7 @@ export default function App() {
         <Route element={<PrivateCus />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-orders" element={<MyOrders />} />
-          <Route path="/item/:id" element={<FashionItem />} />
+          <Route path="/product/:id" element={<FoodItem />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />{" "}
         </Route>

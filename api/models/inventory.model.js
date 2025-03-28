@@ -17,8 +17,6 @@ const inventorySchema = new Schema({
     type: Number,
     required: true,
   },
-  Sizes: [String],
-  Colors: [String],
   description: {
     type: String,
     required: true,
@@ -52,6 +50,18 @@ const inventorySchema = new Schema({
     required: true,
     default: false,
   },
+  expiryDate: {
+    type: Date,
+    required: true,
+  },
+  nutritionalInfo: {
+    calories: Number,
+    protein: Number,
+    carbs: Number,
+    fat: Number
+  },
+  allergenInfo: [String],
+  storageInstructions: String
 });
 
 const Inventory = mongoose.model("Inventory", inventorySchema);

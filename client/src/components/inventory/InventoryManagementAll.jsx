@@ -44,9 +44,8 @@ export default function InventoryManagementAll() {
 
     const fetchInventories = async () => {
       setLoading(true);
-      const searchQuery = urlParams.toString();
       try {
-        const res = await fetch(`/api/inventories/search/get?${searchQuery}`);
+        const res = await fetch(searchTerm ? `/api/inventories/search/get?${searchQuery}` : '/api/inventories');
         const data = await res.json();
         setInventories(data);
       } catch (error) {
@@ -155,11 +154,11 @@ export default function InventoryManagementAll() {
             onChange={handleChange}
           >
             <option value="all">All</option>
-            <option value="Men's Clothing">Men's Clothing</option>
-            <option value="Women's Clothing">Women's Clothing</option>
-            <option value="Kids' Clothing">Kids' Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Footwear">Footwear</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Appetizers">Appetizers</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Side Dishes">Side Dishes</option>
           </select>
           <motion.button
             className="bg-DarkColor text-white p-3 rounded-lg hover:bg-ExtraDarkColor transition"
@@ -202,13 +201,10 @@ export default function InventoryManagementAll() {
                 Price
               </th>
               <th className="text-left px-6 py-4 font-semibold text-DarkColor">
-                Sizes
-              </th>
-              <th className="text-left px-6 py-4 font-semibold text-DarkColor">
-                Colors
-              </th>
-              <th className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Stock Quantity
+              </th>
+              <th className="text-left px-6 py-4 font-semibold text-DarkColor">
+                Expiry Date
               </th>
               <th className="text-left px-6 py-4 font-semibold text-DarkColor">
                 Actions
@@ -238,20 +234,10 @@ export default function InventoryManagementAll() {
                 <td className="text-left px-6 py-4">
                   ${inventory.UnitPrice}.00
                 </td>
-                <td className="text-left px-6 py-4">{inventory.Sizes}</td>
-                <td className="text-left px-6 py-4">
-                  {inventory.Colors &&
-                    inventory.Colors.map((color, index) => (
-                      <span
-                        key={index}
-                        className="inline-block w-4 h-4 rounded-full mr-2 border border-gray-500"
-                        style={{ backgroundColor: color }}
-                      ></span>
-                    ))}
-                </td>
                 <td className="text-left px-6 py-4">
                   {inventory.StockQuantity}
                 </td>
+                <td className="text-left px-6 py-4">{inventory.ExpiryDate}</td>
                 <td className="text-left px-6 py-4">
                   <div className="flex items-center gap-2">
                     <Link to={`/update/${inventory._id}`}>
@@ -354,17 +340,29 @@ export default function InventoryManagementAll() {
                             <strong>Category:</strong> {selectedPart.Category}
                           </p>
                           <p>
-                            <strong>Sizes:</strong> {selectedPart.Sizes}
+                            <strong>Nutritional Info:</strong>
+                          </p>
+                          <ul className="ml-4">
+                            <li>
+                              Calories: {selectedPart.nutritionalInfo?.calories}
+                            </li>
+                            <li>
+                              Protein: {selectedPart.nutritionalInfo?.protein}g
+                            </li>
+                            <li>
+                              Carbs: {selectedPart.nutritionalInfo?.carbs}g
+                            </li>
+                            <li>
+                              Fat: {selectedPart.nutritionalInfo?.fat}g
+                            </li>
+                          </ul>
+                          <p>
+                            <strong>Allergens:</strong>{" "}
+                            {selectedPart.allergenInfo?.join(", ")}
                           </p>
                           <p>
-                            <strong>Colors:</strong>{" "}
-                            {selectedPart.Colors.map((color, index) => (
-                              <span
-                                key={index}
-                                className="inline-block w-4 h-4 rounded-full mr-2 border border-gray-500"
-                                style={{ backgroundColor: color }}
-                              ></span>
-                            ))}
+                            <strong>Storage:</strong>{" "}
+                            {selectedPart.storageInstructions}
                           </p>
                         </div>
                       </div>

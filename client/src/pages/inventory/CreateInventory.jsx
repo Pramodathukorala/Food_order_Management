@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { SketchPicker } from "react-color";
 import { useNavigate } from "react-router-dom"; // Make sure to use this hook for navigation
 import { MdDeleteForever } from "react-icons/md";
 import { useSelector } from "react-redux";
@@ -16,11 +15,9 @@ import { app } from "../../firebase";
 function CreateInventory({ currentUser }) {
   const [formData, setFormData] = useState({
     ItemName: "",
-    Category: "Men's Clothing",
+    Category: "Main Course",
     SKU: "",
     UnitPrice: "",
-    Sizes: [],
-    Colors: [],
     description: "",
     StockQuantity: "",
     ReorderLevel: "",
@@ -28,22 +25,26 @@ function CreateInventory({ currentUser }) {
     SupplierName: "",
     SupplierContact: "",
     imageUrls: [],
+    expiryDate: "",
+    nutritionalInfo: {
+      calories: "",
+      protein: "",
+      carbs: "",
+      fat: "",
+    },
+    allergenInfo: [],
+    storageInstructions: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [sizeInput, setSizeInput] = useState(""); // State to manage size input
-  const [colorInput, setColorInput] = useState(""); // State to manage color input
   const [fileUploadError, setFileUploadError] = useState(false); //A boolean to track if there's an error during file upload.
   const [filePerc, setFilePerc] = useState(0); // A number to track the upload progress of each file.
   const [uploading, setUploading] = useState(false); // A boolean to indicate if files are currently being uploaded.
   const [files, setFiles] = useState([]); // Initialize file state
 
   const handleInputChange = (e) => {
-    // const { name, value } = e.target;
-    // setFormData({ ...formData, [name]: value });
-
     const { name, value } = e.target;
 
     if (name === "SupplierContact") {
@@ -57,6 +58,15 @@ function CreateInventory({ currentUser }) {
           text: "Supplier Contact must be a number and contain up to 10 digits.",
         });
       }
+    } else if (name.startsWith("nutritionalInfo.")) {
+      const key = name.split(".")[1];
+      setFormData((prevState) => ({
+        ...prevState,
+        nutritionalInfo: {
+          ...prevState.nutritionalInfo,
+          [key]: value,
+        },
+      }));
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -140,53 +150,6 @@ function CreateInventory({ currentUser }) {
     });
   };
 
-  // const handleImageUpload = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   const urls = files.map((file) => URL.createObjectURL(file));
-  //   setFormData({ ...formData, imageUrls: [...formData.imageUrls, ...urls] });
-  //   localStorage.setItem(
-  //     "uploadedImages",
-  //     JSON.stringify([...formData.imageUrls, ...urls])
-  //   ); // Save to local storage
-  // };
-
-  // Function to handle size addition
-  const handleAddSize = () => {
-    if (sizeInput && !formData.Sizes.includes(sizeInput)) {
-      setFormData((prevState) => ({
-        ...prevState,
-        Sizes: [...prevState.Sizes, sizeInput],
-      }));
-      setSizeInput(""); // Reset input field
-    }
-  };
-
-  // Function to handle size removal
-  const handleRemoveSize = (size) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      Sizes: prevState.Sizes.filter((s) => s !== size),
-    }));
-  };
-
-  // Function to handle color addition
-  const handleAddColor = (color) => {
-    if (color && !formData.Colors.includes(color.hex)) {
-      setFormData((prevState) => ({
-        ...prevState,
-        Colors: [...prevState.Colors, color.hex],
-      }));
-    }
-  };
-
-  // Function to handle color removal
-  const handleRemoveColor = (color) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      Colors: prevState.Colors.filter((c) => c !== color),
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -250,8 +213,10 @@ function CreateInventory({ currentUser }) {
           icon: "success",
           title: "Success",
           text: "Inventory added successfully",
+        }).then(() => {
+          navigate("/manager/inventory-management");
+          window.location.reload(); // Add this to refresh the inventory list
         });
-        navigate(`/manager/inventory-management`); // Navigate to the newly created inventory item
       }
     } catch (error) {
       setError(error.message);
@@ -297,11 +262,11 @@ function CreateInventory({ currentUser }) {
             onChange={handleInputChange}
             required
           >
-            <option value="Men's Clothing">Men's Clothing</option>
-            <option value="Women's Clothing">Women's Clothing</option>
-            <option value="Kids' Clothing">Kids' Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Footwear">Footwear</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Appetizers">Appetizers</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Side Dishes">Side Dishes</option>
           </select>
         </div>
 
@@ -332,59 +297,59 @@ function CreateInventory({ currentUser }) {
           />
         </div>
 
-        {formData.Category !== "Accessories" && formData.Category && (
-          <>
-            {/* Available Sizes */}
-            <div className="mb-4">
-              <label className="block mb-1 text-[#775c41]">
-                Available Sizes:
-              </label>
-              {["XS", "S", "M", "L"].map((size, index) => (
-                <div className="flex">
-                  <input
-                    key={`chk_bx_${index}`}
-                    type="checkbox"
-                    name={size}
-                    value={size}
-                    id={size}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        Sizes: [...formData.Sizes, e.target.value],
-                      })
-                    }
-                  />
-                  <span
-                    key={`spn_${index}`}
-                    className="mx-2 inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
-                  >
-                    {size}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* Colors */}
+        {/* Expiry Date */}
         <div className="mb-4">
-          <label className="block mb-1 text-[#775c41]">Available Colors:</label>
-          <SketchPicker color={colorInput} onChangeComplete={handleAddColor} />
-          <div className="mt-2">
-            {formData.Colors.map((color, index) => (
-              <span
-                key={index}
-                className="inline-block w-6 h-6 rounded-full mr-2 mb-2"
-                style={{ backgroundColor: color }}
-              >
-                <button
-                  className="ml-2 text-xs text-white"
-                  onClick={() => handleRemoveColor(color)}
-                >
-                  x
-                </button>
-              </span>
-            ))}
+          <label className="block text-DarkColor font-medium mb-2">
+            Expiry Date
+          </label>
+          <input
+            type="date"
+            name="expiryDate"
+            className="w-full p-2 border border-SecondaryColor rounded"
+            value={formData.expiryDate}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+
+        {/* Nutritional Information */}
+        <div className="mb-4">
+          <label className="block text-DarkColor font-medium mb-2">
+            Nutritional Information
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="nutritionalInfo.calories"
+              placeholder="Calories"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.calories}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.protein"
+              placeholder="Protein (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.protein}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.carbs"
+              placeholder="Carbs (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.carbs}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.fat"
+              placeholder="Fat (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.fat}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
@@ -479,8 +444,20 @@ function CreateInventory({ currentUser }) {
           />
         </div>
 
-        {/* Image Upload */}
+        {/* Storage Instructions */}
+        <div className="mb-4">
+          <label className="block text-DarkColor font-medium mb-2">
+            Storage Instructions
+          </label>
+          <textarea
+            name="storageInstructions"
+            className="w-full p-2 border border-SecondaryColor rounded"
+            value={formData.storageInstructions}
+            onChange={handleInputChange}
+          ></textarea>
+        </div>
 
+        {/* Image Upload */}
         <div className="flex flex-col flex-1 gap-4">
           <p className="font-semibold">
             Images:
@@ -539,27 +516,7 @@ function CreateInventory({ currentUser }) {
                 </button>
               </div>
             ))}
-          {/* <div className="flex flex-wrap -mx-3 my-4">
-            <div className="flex items-center justify-center mt-4 container mx-auto">
-              <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
-                Add Event
-              </button>
-            </div>
-          </div> */}
-          {/* {error && <p className="text-red-600">{error}</p>} */}
         </div>
-
-        {/* <div className="mb-4">
-          <label className="block text-DarkColor font-medium mb-2">
-            Upload Images
-          </label>
-          <input
-            type="file"
-            multiple
-            className="w-full p-2 border border-SecondaryColor rounded"
-            onChange={handleImageUpload}
-          />
-        </div> */}
 
         {/* Submit Button */}
         <button

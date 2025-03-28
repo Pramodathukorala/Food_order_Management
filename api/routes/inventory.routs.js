@@ -13,6 +13,7 @@ import {
 const router = express.Router();
 
 //GET all inventories
+router.get("/", getInventories); // Add this route first
 router.get("/all-offers", getInventorieswithOffers);
 
 //GET a single inventory

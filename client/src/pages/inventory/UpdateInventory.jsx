@@ -17,17 +17,27 @@ function UpdateInventory({ currentUser }) {
   console.log("id", id);
   const [formData, setFormData] = useState({
     ItemName: "",
-    Category: "Men's Clothing",
+    Category: "Main Course",
     SKU: "",
-    Sizes: [],
-    Colors: [],
+    UnitPrice: "",
     description: "",
     StockQuantity: "",
     ReorderLevel: "",
-    StockStatus: "",
+    StockStatus: "In Stock",
     SupplierName: "",
     SupplierContact: "",
     imageUrls: [],
+    expiryDate: "",
+    nutritionalInfo: {
+      calories: "",
+      protein: "",
+      carbs: "",
+      fat: "",
+    },
+    allergenInfo: [],
+    storageInstructions: "",
+    Sizes: [],
+    Colors: [], // Initialize Colors as empty array
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,15 +52,17 @@ function UpdateInventory({ currentUser }) {
 
   useEffect(() => {
     const fetchInventory = async () => {
-      // setLoading(true);
       try {
         const res = await fetch(`/api/inventories/${id}`);
         const data = await res.json();
+        // Format the expiry date to YYYY-MM-DD for the input field
+        if (data.expiryDate) {
+          data.expiryDate = new Date(data.expiryDate).toISOString().split("T")[0];
+        }
         setFormData(data);
       } catch (error) {
         console.error("Error fetching inventories:", error);
       }
-      // setLoading(false);
     };
     fetchInventory();
   }, []);
@@ -132,9 +144,6 @@ function UpdateInventory({ currentUser }) {
   };
 
   const handleInputChange = (e) => {
-    // const { name, value } = e.target;
-    // setFormData({ ...formData, [name]: value });
-
     const { name, value } = e.target;
 
     if (name === "SupplierContact") {
@@ -148,6 +157,15 @@ function UpdateInventory({ currentUser }) {
           text: "Supplier Contact must be a number and contain up to 10 digits.",
         });
       }
+    } else if (name.startsWith("nutritionalInfo.")) {
+      const key = name.split(".")[1];
+      setFormData((prevState) => ({
+        ...prevState,
+        nutritionalInfo: {
+          ...prevState.nutritionalInfo,
+          [key]: value,
+        },
+      }));
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -184,10 +202,10 @@ function UpdateInventory({ currentUser }) {
 
   // Function to handle color addition
   const handleAddColor = (color) => {
-    if (color && !formData.Colors.includes(color.hex)) {
+    if (color && !formData.Colors?.includes(color.hex)) { // Add optional chaining
       setFormData((prevState) => ({
         ...prevState,
-        Colors: [...prevState.Colors, color.hex],
+        Colors: [...(prevState.Colors || []), color.hex], // Add null check
       }));
     }
   };
@@ -197,7 +215,7 @@ function UpdateInventory({ currentUser }) {
     e.preventDefault(); // Prevent form submission when clicking the remove button
     setFormData((prevState) => ({
       ...prevState,
-      Colors: prevState.Colors.filter((c) => c !== color),
+      Colors: (prevState.Colors || []).filter((c) => c !== color), // Add null check
     }));
   };
 
@@ -281,9 +299,9 @@ function UpdateInventory({ currentUser }) {
   return (
     <div className="max-w-lg mx-auto p-6 mt-10 bg-PrimaryColor rounded-lg shadow-md">
       <h1 className="text-2xl font-bold text-center text-ExtraDarkColor mb-6">
-        Add Inventory
+        Update Inventory
       </h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex-1 grid-cols-2">
         {/* Item Name */}
         <div className="mb-4">
           <label className="block text-DarkColor font-medium mb-2">
@@ -311,151 +329,81 @@ function UpdateInventory({ currentUser }) {
             onChange={handleInputChange}
             required
           >
-            <option value="Men's Clothing">Men's Clothing</option>
-            <option value="Women's Clothing">Women's Clothing</option>
-            <option value="Kids' Clothing">Kids' Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Footwear">Footwear</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Appetizers">Appetizers</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Side Dishes">Side Dishes</option>
           </select>
         </div>
 
-        {/* SKU */}
-        <div className="mb-4">
-          <label className="block text-DarkColor font-medium mb-2">SKU</label>
-          <input
-            type="number"
-            name="SKU"
-            className="w-full p-2 border border-SecondaryColor rounded"
-            value={formData.SKU}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        {/* Price */}
+        {/* Expiry Date */}
         <div className="mb-4">
           <label className="block text-DarkColor font-medium mb-2">
-            Unit Price
+            Expiry Date
           </label>
           <input
-            type="number"
-            name="UnitPrice"
+            type="date"
+            name="expiryDate"
             className="w-full p-2 border border-SecondaryColor rounded"
-            value={formData.UnitPrice}
+            value={formData.expiryDate || ""}
             onChange={handleInputChange}
             required
           />
         </div>
 
-        {/* Sizes */}
-        {/* <div className="mb-4">
-          <label className="block text-DarkColor font-medium mb-2">Sizes</label>
-          <select
-            name="Sizes"
-            className="w-full p-2 border border-SecondaryColor rounded"
-            value={formData.Sizes}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="small">S</option>
-            <option value="medium">M</option>
-            <option value="large">L</option>
-            <option value="extra large">XL</option>
-          </select>
-        </div> */}
-
-        {formData.Category !== "Accessories" && formData.Category && (
-          <>
-            {/* Available Sizes */}
-            <div className="mb-4">
-              <label className="block mb-1 text-[#775c41]">
-                Available Sizes:
-              </label>
-              {["XS", "S", "M", "L"].map((size, index) => (
-                <div className="flex">
-                  <input
-                    key={`chk_bx_${index}`}
-                    type="checkbox"
-                    name={size}
-                    value={size}
-                    id={size}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setFormData({
-                          ...formData,
-                          Sizes: [...formData.Sizes, e.target.value],
-                        });
-                      } else {
-                        setFormData({
-                          ...formData,
-                          Sizes: formData.Sizes.filter(
-                            (s) => s !== e.target.value
-                          ),
-                        });
-                      }
-                    }}
-                    checked={formData.Sizes.includes(size)}
-                  />
-                  <span
-                    key={`spn_${index}`}
-                    className="mx-2 inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
-                  >
-                    {size}
-                  </span>
-                  {/* <label for={m} className="mx-2">
-                    {m}
-                  </label> */}
-                </div>
-              ))}
-              {/* <input
-                type="text"
-                placeholder="Add size and press enter"
-                value={sizeInput}
-                onChange={(e) => setSizeInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddSize()}
-                className="block w-full p-2 border border-gray-300 rounded"
-              />
-              <div className="mt-2">
-                {formData.Sizes.map((size, index) => (
-                  <span
-                    key={index}
-                    className="inline-block bg-[#a98467] text-white px-2 py-1 rounded-full mr-2 mb-2"
-                  >
-                    {size}
-                    <button
-                      className="ml-2 text-xs"
-                      onClick={() => handleRemoveSize(size)}
-                    >
-                      x
-                    </button>
-                  </span>
-                ))}
-              </div> */}
-            </div>
-          </>
-        )}
-
-        {/* Colors */}
+        {/* Nutritional Information */}
         <div className="mb-4">
-          <label className="block mb-1 text-[#775c41]">Available Colors:</label>
-          <SketchPicker color={colorInput} onChangeComplete={handleAddColor} />
-          <div className="mt-2">
-            {formData.Colors.map((color, index) => (
-              <span
-                key={index}
-                className="inline-block w-6 h-6 rounded-full mr-2 mb-2"
-                style={{ backgroundColor: color }}
-              >
-                <button
-                  className="ml-2 text-xs text-white"
-                  type="button" // Ensure this button is not part of the form submission
-                  onClick={(e) => handleRemoveColor(color, e)} // Pass the event to prevent default behavior
-                >
-                  x
-                </button>
-              </span>
-            ))}
+          <label className="block text-DarkColor font-medium mb-2">
+            Nutritional Information
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="nutritionalInfo.calories"
+              placeholder="Calories"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.calories}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.protein"
+              placeholder="Protein (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.protein}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.carbs"
+              placeholder="Carbs (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.carbs}
+              onChange={handleInputChange}
+            />
+            <input
+              type="number"
+              name="nutritionalInfo.fat"
+              placeholder="Fat (g)"
+              className="p-2 border border-SecondaryColor rounded"
+              value={formData.nutritionalInfo.fat}
+              onChange={handleInputChange}
+            />
           </div>
+        </div>
+
+        {/* Storage Instructions */}
+        <div className="mb-4">
+          <label className="block text-DarkColor font-medium mb-2">
+            Storage Instructions
+          </label>
+          <textarea
+            name="storageInstructions"
+            className="w-full p-2 border border-SecondaryColor rounded"
+            value={formData.storageInstructions}
+            onChange={handleInputChange}
+          ></textarea>
         </div>
 
         {/* Description */}
@@ -608,14 +556,6 @@ function UpdateInventory({ currentUser }) {
                 </button>
               </div>
             ))}
-          {/* <div className="flex flex-wrap -mx-3 my-4">
-                <div className="flex items-center justify-center mt-4 container mx-auto">
-                  <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded">
-                    Update Event
-                  </button>
-                </div>
-              </div> */}
-          {/* {error && <p className="text-red-600">{error}</p>} */}
         </div>
 
         {/* Submit Button */}
@@ -624,7 +564,7 @@ function UpdateInventory({ currentUser }) {
           className="w-full p-2 mt-4 bg-DarkColor text-white rounded hover:bg-ExtraDarkColor transition"
           disabled={loading}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? "Updating..." : "Update"}
         </button>
       </form>
 

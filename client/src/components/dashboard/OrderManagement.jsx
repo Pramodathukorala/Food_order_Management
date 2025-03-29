@@ -551,9 +551,7 @@ export default function OrderManagement() {
                 <table className="min-w-full bg-white border border-gray-300">
                   <thead>
                     <tr>
-                      <th className="py-2 px-4 border-b">Item</th>
-                      <th className="py-2 px-4 border-b">Color</th>
-                      <th className="py-2 px-4 border-b">Size</th>
+                      <th className="py-2 px-4 border-b">Item</th>                     
                       <th className="py-2 px-4 border-b">Quantity</th>
                       <th className="py-2 px-4 border-b">Price</th>
                     </tr>
@@ -562,8 +560,6 @@ export default function OrderManagement() {
                     {selectedOrder.items.map((item, index) => (
                       <tr key={index}>
                         <td className="py-2 px-4 border-b">{item.title}</td>
-                        <td className="py-2 px-4 border-b">{item.color}</td>
-                        <td className="py-2 px-4 border-b">{item.size}</td>
                         <td className="py-2 px-4 border-b">{item.quantity}</td>
                         <td className="py-2 px-4 border-b">${item.price}</td>
                       </tr>

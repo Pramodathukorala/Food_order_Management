@@ -220,12 +220,12 @@ const Checkout = () => {
                     <div className="flex flex-col">
                       <span className="font-medium">{item.title}</span>
                       <span className="text-gray-500">
-                        Color:{" "}
+                         
                         <button
                           style={{ backgroundColor: item.color }}
                           className="w-5 h-5 rounded-full border-2 "
                         />{" "}
-                        Size: {item.size}
+                        
                       </span>
                     </div>
                   </div>

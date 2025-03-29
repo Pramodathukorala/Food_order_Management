@@ -97,7 +97,7 @@ const Cart = () => {
         <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10 mt-20">
           {/* Left Side: Cart Items */}
           <div className="w-full lg:w-2/3 space-y-6">
-            <h1 className="text-3xl font-semibold mb-4">Your Fashion Cart</h1>
+            <h1 className="text-3xl font-semibold mb-4">Your Food Cart</h1>
             {cartItems.length > 0 ? (
               cartItems.map((item) => (
                 <div
@@ -112,17 +112,17 @@ const Cart = () => {
                   <div className="flex-1 px-4">
                     <h3 className="text-xl font-semibold">{item.title}</h3>
                     <p className="text-gray-600">Price: ${item.price}</p>
-                    <p className="text-gray-600">Size: {item.size}</p>
+                    
                     <p className="text-gray-600">
-                      Color:{" "}
+                      
                       <span
                         style={{
                           backgroundColor: item.color,
-                          color: item.color,
+                           
                         }}
                         className="w-8 h-8 rounded-full text-xs"
                       >
-                        ws
+                     
                       </span>
                     </p>{" "}
                     {/* Display color */}

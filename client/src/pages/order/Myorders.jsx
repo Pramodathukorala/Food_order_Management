@@ -142,9 +142,9 @@ const MyOrders = () => {
                           <p className="text-gray-700 font-medium mt-2">
                             {item.title}
                           </p>
-                          <p className="text-gray-600">Size: {item.size}</p>
+                           
                           <p>
-                            Color:{" "}
+                            
                             <button
                               style={{
                                 backgroundColor: item.color,
@@ -253,7 +253,7 @@ const MyOrders = () => {
                           <ul className="list-disc pl-5 mb-2">
                             {order.items.map((item) => (
                               <li key={item.itemId} className="text-gray-700">
-                                {item.title} - Size: {item.size} - Color:{" "}
+                                 
                                 <button
                                   style={{
                                     backgroundColor: item.color,

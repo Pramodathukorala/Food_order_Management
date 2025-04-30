@@ -20,20 +20,20 @@ const Invoice = ({ expandedOrders }) => {
       <Page size="A4" style={styles.page}>
         {/* Header Section */}
         <View style={styles.header}>
-          {/* Logo */}
-          <Image src={logoBase64} style={styles.logo} />
+          {/* Logo
+          <Image src={logoBase64} style={styles.logo} /> */}
 
           {/* Company Details */}
           <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>FashioNexus</Text>
+            <Text style={styles.companyName}>FoodShift</Text>
             <Text style={styles.companyDetails}>Sapugaskanda</Text>
             <Text style={styles.companyDetails}>
-              Email: fashionexus@gmail.com
+              Email: foodshift@gmail.com
             </Text>
             <Text style={styles.companyDetails}>Phone: +9476556435</Text>
           </View>
         </View>
-
+ 
         {/* Invoice Title */}
         <Text style={styles.invoiceTitle}>Invoice</Text>
 
@@ -131,7 +131,7 @@ const Invoice = ({ expandedOrders }) => {
         {/* Footer Section */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Thank you for choosing FashioNexus!
+            Thank you for choosing FoodShift!
           </Text>
         </View>
       </Page>

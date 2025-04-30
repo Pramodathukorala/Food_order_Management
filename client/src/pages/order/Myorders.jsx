@@ -302,12 +302,16 @@ const MyOrders = () => {
                         Payment Method: {order.paymentMethod}
                       </p>
                       <div className="flex space-x-2 mt-4">
+
+
                         <button
                           onClick={() => handleUpdateOrder(order)}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
                         >
                           Update
+
                         </button>
+                       
                         <button
                           onClick={() => handleDeleteOrder(order._id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"

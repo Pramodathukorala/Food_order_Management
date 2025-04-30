@@ -146,6 +146,22 @@ export default function Profile() {
     });
   };
 
+  const getBmiCategory = (bmi) => {
+    if (bmi === 0) return "Not calculated";
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal weight";
+    if (bmi < 30) return "Overweight";
+    return "Obese";
+  };
+
+  const getBmiColor = (bmi) => {
+    if (bmi === 0) return "text-gray-600";
+    if (bmi < 18.5) return "text-blue-600";
+    if (bmi < 25) return "text-green-600";
+    if (bmi < 30) return "text-yellow-600";
+    return "text-red-600";
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -194,21 +210,36 @@ export default function Profile() {
 
             <div className="grid grid-cols-2 gap-4">
               <input
-                type="text"
-                id="firstname"
-                placeholder="First Name"
+                type="number"
+                id="height"
+                placeholder="Height (cm)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.firstname}
+                defaultValue={currentUser.height}
                 onChange={handleChange}
               />
               <input
-                type="text"
-                id="lastname"
-                placeholder="Last Name"
+                type="number"
+                id="weight"
+                placeholder="Weight (kg)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.lastname}
+                defaultValue={currentUser.weight}
                 onChange={handleChange}
               />
+            </div>
+
+            {/* Updated BMI Display */}
+            <div className="bg-gray-100 p-4 rounded-lg mb-4">
+              <h3 className="text-lg font-semibold mb-2">BMI Information</h3>
+              <p className="text-gray-700">
+                Your BMI: {currentUser.bmi > 0 ? currentUser.bmi.toFixed(2) : "Not calculated"}
+              </p>
+              <p className={`text-sm mt-1 ${getBmiColor(currentUser.bmi)}`}>
+                Category: {getBmiCategory(currentUser.bmi)}
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                BMI Categories:<br/>
+                Underweight: &lt;18.5 | Normal: 18.5-24.9 | Overweight: 25-29.9 | Obese: ≥30
+              </p>
             </div>
 
             <input

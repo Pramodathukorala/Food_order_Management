@@ -9,6 +9,8 @@ export default function SignUp({ onClose, onSignIn }) {
     username: "",
     password: "",
     repeatPassword: "",
+    height: "",
+    weight: ""
   });
   const [loading, setLoading] = useState(false);
 
@@ -63,18 +65,10 @@ export default function SignUp({ onClose, onSignIn }) {
   const inputFields = [
     { name: "email", type: "email", placeholder: "Email", icon: FaEnvelope },
     { name: "username", type: "text", placeholder: "Username", icon: FaUser },
-    {
-      name: "password",
-      type: "password",
-      placeholder: "Password",
-      icon: FaLock,
-    },
-    {
-      name: "repeatPassword",
-      type: "password",
-      placeholder: "Repeat Password",
-      icon: FaLock,
-    },
+    { name: "password", type: "password", placeholder: "Password", icon: FaLock },
+    { name: "repeatPassword", type: "password", placeholder: "Repeat Password", icon: FaLock },
+    { name: "height", type: "number", placeholder: "Height (cm)", icon: FaUser },
+    { name: "weight", type: "number", placeholder: "Weight (kg)", icon: FaUser },
   ];
 
   return (

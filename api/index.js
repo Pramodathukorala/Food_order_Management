@@ -72,15 +72,13 @@ app.get("/", (req, res) => {
   res.json({ mssg: "Welcome to the app" });
 });
 
+app.use(cors({
+  origin: 'http://localhost:5173', // or your frontend URL
+  credentials: true // Important for cookies
+}));
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Add PUT and DELETE
-    credentials: true,
-  })
-);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!!!`);

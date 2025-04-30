@@ -73,37 +73,41 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserstart());
+
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          _id: currentUser._id // Send user ID in body
+        }),
       });
 
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(updateUserFailure(data.message));
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: `${error}`,
-        });
-        return;
+      
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update profile');
       }
+
       dispatch(updateUserSuccess(data));
       setUpdateSuccess(true);
       Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Profile updated successfully",
+        position: 'top-end',
+        icon: 'success',
+        title: 'Profile updated successfully',
         showConfirmButton: false,
         timer: 1500,
       });
     } catch (error) {
+      console.error('Update error:', error);
       dispatch(updateUserFailure(error.message));
       Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: `${error}`,
+        icon: 'error',
+        title: 'Update Failed',
+        text: error.message || 'Could not update profile',
       });
     }
   };
@@ -140,6 +144,22 @@ export default function Profile() {
         }
       }
     });
+  };
+
+  const getBmiCategory = (bmi) => {
+    if (bmi === 0) return "Not calculated";
+    if (bmi < 18.5) return "Underweight";
+    if (bmi < 25) return "Normal weight";
+    if (bmi < 30) return "Overweight";
+    return "Obese";
+  };
+
+  const getBmiColor = (bmi) => {
+    if (bmi === 0) return "text-gray-600";
+    if (bmi < 18.5) return "text-blue-600";
+    if (bmi < 25) return "text-green-600";
+    if (bmi < 30) return "text-yellow-600";
+    return "text-red-600";
   };
 
   return (
@@ -190,21 +210,36 @@ export default function Profile() {
 
             <div className="grid grid-cols-2 gap-4">
               <input
-                type="text"
-                id="firstname"
-                placeholder="First Name"
+                type="number"
+                id="height"
+                placeholder="Height (cm)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.firstname}
+                defaultValue={currentUser.height}
                 onChange={handleChange}
               />
               <input
-                type="text"
-                id="lastname"
-                placeholder="Last Name"
+                type="number"
+                id="weight"
+                placeholder="Weight (kg)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.lastname}
+                defaultValue={currentUser.weight}
                 onChange={handleChange}
               />
+            </div>
+
+            {/* Updated BMI Display */}
+            <div className="bg-gray-100 p-4 rounded-lg mb-4">
+              <h3 className="text-lg font-semibold mb-2">BMI Information</h3>
+              <p className="text-gray-700">
+                Your BMI: {currentUser.bmi > 0 ? currentUser.bmi.toFixed(2) : "Not calculated"}
+              </p>
+              <p className={`text-sm mt-1 ${getBmiColor(currentUser.bmi)}`}>
+                Category: {getBmiCategory(currentUser.bmi)}
+              </p>
+              <p className="text-xs text-gray-500 mt-2">
+                BMI Categories:<br/>
+                Underweight: &lt;18.5 | Normal: 18.5-24.9 | Overweight: 25-29.9 | Obese: ≥30
+              </p>
             </div>
 
             <input

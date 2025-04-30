@@ -122,14 +122,14 @@ const AllUsers = () => {
       .setFont("helvetica", "normal")
       .setFontSize(28)
       .setTextColor(169, 132, 109);
-    doc.text("FashioNexus", 105, 20, { align: "center" });
+    doc.text("FoodShift", 105, 20, { align: "center" });
 
     doc.setFont("helvetica", "normal").setFontSize(18).setTextColor(0, 0, 0);
     doc.text("User Details Report", 105, 30, { align: "center" });
 
     // Subheader
     doc.setFontSize(10).setTextColor(100, 100, 100);
-    doc.text("FashioNexus.co, Galle Road, Colombo, Sri Lanka", 105, 38, {
+    doc.text("FoodShift.co, Galle Road, Colombo, Sri Lanka", 105, 38, {
       align: "center",
     });
 
@@ -230,7 +230,7 @@ const AllUsers = () => {
     }
 
     // Save the PDF
-    doc.save("FashioNexus_User_Report.pdf");
+    doc.save("Foodorder_User_Report.pdf");
   };
 
   const handleDownload = () => {

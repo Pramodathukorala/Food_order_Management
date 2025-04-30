@@ -4,18 +4,27 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
-  const { username, email, password, ismanager, usertype } = req.body;
-  const hashedPassword = bcryptjs.hashSync(password, 10);
-  const newUser = new User({
-    username,
-    email,
-    password: hashedPassword,
-    usertype,
-    ismanager,
-  });
+  const { username, email, password, ismanager, usertype, height, weight } = req.body;
+  
   try {
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return next(errorHandler(400, "User already exists"));
+    }
+
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+    const newUser = new User({
+      username,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      usertype,
+      ismanager,
+      height: height || 0,
+      weight: weight || 0,
+    });
+
     await newUser.save();
-    res.status(201).json("User created successfully!!!");
+    res.status(201).json({ success: true, message: "User created successfully" });
   } catch (error) {
     next(error);
   }
@@ -23,32 +32,39 @@ export const signup = async (req, res, next) => {
 
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log("Received sign-in request for email:", email); // Debugging
+  console.log("Received sign-in request for email:", email); 
 
   try {
-    // Convert email to lowercase to handle case sensitivity
     const validUser = await User.findOne({ email: email.toLowerCase() });
-    console.log("Valid user:", validUser); // Debugging
+    console.log("Found user:", validUser ? "Yes" : "No");
 
     if (!validUser) {
-      console.log("User not found."); // Debugging
       return next(errorHandler(404, "User not found"));
     }
 
     const validPassword = bcryptjs.compareSync(password, validUser.password);
+    console.log("Password valid:", validPassword ? "Yes" : "No");
+
     if (!validPassword) {
-      console.log("Password mismatch."); // Debugging
-      return next(errorHandler(401, "Email or Password incorrect"));
+      return next(errorHandler(401, "Wrong credentials"));
     }
 
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = validUser._doc;
+
+    console.log("Login successful, sending response");
+    
     res
-      .cookie("access_token", token, { httpOnly: true })
+      .cookie("access_token", token, { 
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Only use HTTPS in production
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      })
       .status(200)
       .json(rest);
   } catch (error) {
-    console.error("Sign-in error:", error); // Debugging
+    console.error("Sign-in error:", error);
     next(error);
   }
 };

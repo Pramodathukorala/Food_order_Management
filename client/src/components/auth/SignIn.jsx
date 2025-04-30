@@ -23,11 +23,24 @@ export default function SignIn({ onClose, onSignUp }) {
 
   const handleSignInSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.email || !formData.password) {
+      Swal.fire({
+        icon: "error",
+        title: "Missing Fields",
+        text: "Please fill in all fields",
+      });
+      return;
+    }
+
     try {
       dispatch(signInstart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+        },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({
           email: formData.email.toLowerCase(),
           password: formData.password,
@@ -35,20 +48,21 @@ export default function SignIn({ onClose, onSignUp }) {
       });
 
       const data = await res.json();
+      console.log("Sign-in response:", data);
 
       if (!res.ok) {
         dispatch(signInFailure(data.message));
         Swal.fire({
           icon: "error",
-          title: "Oops...",
-          text: data.message,
-          confirmButtonColor: "#4A5568",
+          title: "Sign In Failed",
+          text: data.message || "Invalid credentials",
         });
         return;
       }
 
       dispatch(signInSuccess(data));
-      onClose(); // Close the popup on successful login
+      onClose();
+      
       if (data.ismanager) {
         navigate("/manager");
       } else {
@@ -58,17 +72,17 @@ export default function SignIn({ onClose, onSignUp }) {
       Swal.fire({
         position: "top-end",
         icon: "success",
-        title: "Login successful",
+        title: "Signed in successfully",
         showConfirmButton: false,
         timer: 1500,
       });
     } catch (error) {
+      console.error("Sign-in error:", error);
       dispatch(signInFailure(error.message));
       Swal.fire({
         icon: "error",
-        title: "Oops...",
-        text: error.message,
-        confirmButtonColor: "#4A5568",
+        title: "Error",
+        text: "An unexpected error occurred",
       });
     }
   };

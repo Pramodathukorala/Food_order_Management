@@ -22,15 +22,19 @@ export const updateUser = async (req, res, next) => {
       return next(errorHandler(403, 'You can update only your account!'));
     }
 
+    // Calculate BMI if height and weight are provided
+    let bmi = 0;
+    if (req.body.height && req.body.weight && req.body.height > 0 && req.body.weight > 0) {
+      const heightInMeters = req.body.height / 100;
+      bmi = +(req.body.weight / (heightInMeters * heightInMeters)).toFixed(2);
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         $set: {
-          firstname: req.body.firstname,
-          lastname: req.body.lastname,
-          username: req.body.username,
-          email: req.body.email,
-          avatar: req.body.avatar,
+          ...req.body,
+          bmi: bmi
         }
       },
       { new: true }

@@ -1,26 +1,15 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
+  plugins: [react()],
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:3000/", // Changed to localhost
-        secure: false,
-      },
-    },
-  },
-  build: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000/", // Changed to localhost
+      '/api': {
+        target: 'http://localhost:3000', // Update this to match your backend URL
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace("/api", ""),
       },
     },
   },
-
-  plugins: [react()],
 });

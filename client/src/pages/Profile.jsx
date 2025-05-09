@@ -59,6 +59,9 @@ export default function Profile() {
   const predictionInputRef = useRef(null);
   const [nutritionData, setNutritionData] = useState(null);
 
+  // Add base URL constant
+  const API_BASE_URL = 'http://localhost:3000'; // Update this to match your backend URL
+
   //use effect function to load the model when first rendering the web page
   useEffect(() => {
     loadModel();
@@ -297,7 +300,7 @@ export default function Profile() {
     try {
       dispatch(updateUserstart());
 
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/user/update/${currentUser._id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
@@ -330,7 +333,7 @@ export default function Profile() {
       Swal.fire({
         icon: "error",
         title: "Update Failed",
-        text: error.message || "Could not update profile",
+        text: "Server connection error. Please try again later.",
       });
     }
   };
@@ -348,8 +351,9 @@ export default function Profile() {
       if (result.isConfirmed) {
         try {
           dispatch(deleteUserstart());
-          const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+          const res = await fetch(`${API_BASE_URL}/api/user/delete/${currentUser._id}`, {
             method: "DELETE",
+            credentials: "include"
           });
           const data = await res.json();
           if (data.success === false) {
@@ -363,7 +367,12 @@ export default function Profile() {
             icon: "success",
           });
         } catch (error) {
-          dispatch(deleteUserFailure(error.message));
+          dispatch(deleteUserFailure("Connection error"));
+          Swal.fire({
+            icon: "error",
+            title: "Delete Failed",
+            text: "Server connection error. Please try again later."
+          });
         }
       }
     });

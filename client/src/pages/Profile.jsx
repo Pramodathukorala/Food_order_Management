@@ -32,7 +32,12 @@ export default function Profile() {
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    username: currentUser.username,
+    height: currentUser.height,
+    weight: currentUser.weight,
+    bmi: currentUser.bmi,
+  });
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
   const [bmi, setBmi] = useState();
@@ -292,7 +297,21 @@ export default function Profile() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData(prev => {
+      const newFormData = { ...prev, [id]: value };
+      
+      // Calculate BMI if both height and weight are present
+      if ((id === 'height' || id === 'weight') && newFormData.height && newFormData.weight) {
+        const heightInMeters = Number(newFormData.height) / 100;
+        const weightInKg = Number(newFormData.weight);
+        if (heightInMeters > 0 && weightInKg > 0) {
+          newFormData.bmi = +(weightInKg / (heightInMeters * heightInMeters)).toFixed(2);
+        }
+      }
+      
+      return newFormData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -300,16 +319,20 @@ export default function Profile() {
     try {
       dispatch(updateUserstart());
 
+      // Ensure height and weight are numbers
+      const updatedFormData = {
+        ...formData,
+        height: Number(formData.height),
+        weight: Number(formData.weight),
+      };
+
       const res = await fetch(`${API_BASE_URL}/api/user/update/${currentUser._id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          _id: currentUser._id, // Send user ID in body
-        }),
+        body: JSON.stringify(updatedFormData),
       });
 
       const data = await res.json();
@@ -446,7 +469,7 @@ export default function Profile() {
                 id="height"
                 placeholder="Height (cm)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.height}
+                value={formData.height || ''}
                 onChange={handleChange}
               />
               <input
@@ -454,7 +477,7 @@ export default function Profile() {
                 id="weight"
                 placeholder="Weight (kg)"
                 className="border p-3 rounded-lg w-full"
-                defaultValue={currentUser.weight}
+                value={formData.weight || ''}
                 onChange={handleChange}
               />
             </div>

@@ -97,7 +97,7 @@ const Cart = () => {
         <div className="w-full lg:w-3/4 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-10 mt-20">
           {/* Left Side: Cart Items */}
           <div className="w-full lg:w-2/3 space-y-6">
-            <h1 className="text-3xl font-semibold mb-4">Your Fashion Cart</h1>
+            <h1 className="text-3xl font-semibold mb-4">Your Food Cart</h1>
             {cartItems.length > 0 ? (
               cartItems.map((item) => (
                 <div

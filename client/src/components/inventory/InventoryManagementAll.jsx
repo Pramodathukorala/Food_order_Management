@@ -20,6 +20,7 @@ export default function InventoryManagementAll() {
   });
   const [loading, setLoading] = useState(false);
   const [inventories, setInventories] = useState([]);
+  const [filteredInventories, setFilteredInventories] = useState([]);
   const [selectedPart, setSelectedPart] = useState(null);
   const [expandedSections, setExpandedSections] = useState({
     itemInfo: true,
@@ -35,43 +36,47 @@ export default function InventoryManagementAll() {
   };
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchTerm = urlParams.get("searchTerm") || "";
-    const category = urlParams.get("category") || "all";
-    const sort = urlParams.get("sort") || "created_at";
-    const order = urlParams.get("order") || "desc";
-    setSearchData({ searchTerm, category, sort, order });
-
     const fetchInventories = async () => {
       setLoading(true);
       try {
-        const res = await fetch(searchTerm ? `/api/inventories/search/get?${searchQuery}` : '/api/inventories');
+        const res = await fetch('/api/inventories');
         const data = await res.json();
+        if (data.success === false) {
+          console.error("Error:", data.message);
+          return;
+        }
         setInventories(data);
+        setFilteredInventories(data);
       } catch (error) {
         console.error("Error fetching inventories:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchInventories();
-  }, [location.search]);
+  }, []);
 
   const handleChange = (e) => {
-    setSearchData({ ...searchData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setSearchData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const urlParams = new URLSearchParams();
-    urlParams.set("searchTerm", searchData.searchTerm);
-    urlParams.set("category", searchData.category);
-    const searchQuery = urlParams.toString();
-    navigate(`/manager/inventory-management?${searchQuery}`);
-  };
+  const handleSubmit = () => {
+    const filtered = inventories.filter((item) => {
+      const matchesSearch =
+        item.ItemName.toLowerCase().includes(searchData.searchTerm.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchData.searchTerm.toLowerCase());
+      const matchesCategory =
+        searchData.category === "all" || item.Category === searchData.category;
 
-  const handleEdit = (inventoryId) => {
-    navigate(`/update/${inventoryId}`);
+      return matchesSearch && matchesCategory;
+    });
+
+    setFilteredInventories(filtered);
   };
 
   const handleDelete = async (inventoryId) => {
@@ -100,6 +105,9 @@ export default function InventoryManagementAll() {
             icon: "success",
           });
           setInventories((prev) =>
+            prev.filter((inventory) => inventory._id !== inventoryId)
+          );
+          setFilteredInventories((prev) =>
             prev.filter((inventory) => inventory._id !== inventoryId)
           );
         } catch (error) {
@@ -168,7 +176,7 @@ export default function InventoryManagementAll() {
             Search
           </motion.button>
           <motion.div whileHover={{ scale: 1.1 }}>
-            <InventoryReport inventory={inventories} />
+            <InventoryReport inventory={filteredInventories} />
           </motion.div>
         </motion.div>
 
@@ -212,7 +220,7 @@ export default function InventoryManagementAll() {
             </tr>
           </thead>
           <tbody>
-            {inventories.map((inventory) => (
+            {filteredInventories.map((inventory) => (
               <motion.tr
                 key={inventory._id}
                 whileHover={{ scale: 1.02 }}

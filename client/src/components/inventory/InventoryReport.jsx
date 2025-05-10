@@ -48,7 +48,7 @@ export default function InventoryReport({ inventory }) {
     // logo.src = "../../assets/img/Logo14.png";
 
     doc.setFontSize(28).setFont("Mooli", "bold").setTextColor(169, 132, 109);
-    doc.text("FashioNexus", 80, 15);
+    doc.text("FoodShift", 80, 15);
 
     doc.setFont("helvetica", "normal").setFontSize(20).setTextColor(0, 0, 0);
     doc.text("Inventory Details Report", 65, 25);
@@ -60,7 +60,7 @@ export default function InventoryReport({ inventory }) {
       .setFont("courier", "normal")
       .setFontSize(12)
       .setTextColor(150, 150, 150);
-    doc.text("FashioNexus.co, Galle Road, Colombo, Sri lanka", 50, 45);
+    doc.text("Foodshift.co, Galle Road, Colombo, Sri lanka", 50, 45);
 
     doc
       .setFont("courier", "normal")

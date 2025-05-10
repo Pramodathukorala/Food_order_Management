@@ -15,30 +15,37 @@ export const updateUser = async (req, res, next) => {
     console.log('Update request body:', req.body);
     console.log('User from token:', req.user);
     
-    const user = await User.findById(req.params.id);
-    if (!user) return next(errorHandler(404, 'User not found'));
-    
     if (req.params.id !== req.user.id) {
       return next(errorHandler(403, 'You can update only your account!'));
     }
 
-    // Calculate BMI if height and weight are provided
+    // Ensure height and weight are numbers
+    const height = Number(req.body.height);
+    const weight = Number(req.body.weight);
+    
+    // Calculate BMI
     let bmi = 0;
-    if (req.body.height && req.body.weight && req.body.height > 0 && req.body.weight > 0) {
-      const heightInMeters = req.body.height / 100;
-      bmi = +(req.body.weight / (heightInMeters * heightInMeters)).toFixed(2);
+    if (height > 0 && weight > 0) {
+      const heightInMeters = height / 100;
+      bmi = +(weight / (heightInMeters * heightInMeters)).toFixed(2);
     }
+
+    const updateData = {
+      ...req.body,
+      height,
+      weight,
+      bmi
+    };
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      {
-        $set: {
-          ...req.body,
-          bmi: bmi
-        }
-      },
+      { $set: updateData },
       { new: true }
     );
+
+    if (!updatedUser) {
+      return next(errorHandler(404, 'User not found'));
+    }
 
     const { password, ...rest } = updatedUser._doc;
     res.status(200).json(rest);

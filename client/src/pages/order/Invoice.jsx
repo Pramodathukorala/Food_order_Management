@@ -20,15 +20,14 @@ const Invoice = ({ expandedOrders }) => {
       <Page size="A4" style={styles.page}>
         {/* Header Section */}
         <View style={styles.header}>
-          {/* Logo
-          <Image src={logoBase64} style={styles.logo} /> */}
+
 
           {/* Company Details */}
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>FoodShift</Text>
             <Text style={styles.companyDetails}>Sapugaskanda</Text>
             <Text style={styles.companyDetails}>
-              Email: foodshift@gmail.com
+
             </Text>
             <Text style={styles.companyDetails}>Phone: +9476556435</Text>
           </View>
@@ -107,9 +106,9 @@ const Invoice = ({ expandedOrders }) => {
 
         {/* Item List */}
         <View style={styles.tableHeader}>
-          <Text style={styles.tableHeaderText}>Item Name</Text>
+          <Text style={styles.tableHeaderText}>Food Name</Text>
           <Text style={styles.tableHeaderText}>Quantity</Text>
-          <Text style={styles.tableHeaderText}>Size</Text>
+           
           <Text style={styles.tableHeaderText}>Price (Rs.)</Text>
         </View>
 
@@ -121,7 +120,7 @@ const Invoice = ({ expandedOrders }) => {
           >
             <Text style={styles.tableCell}>{item.title}</Text>
             <Text style={styles.tableCell}>{item.quantity}</Text>
-            <Text style={styles.tableCell}>{item.size}</Text>
+            
             <Text style={styles.tableCell}>
               ${Number(item.price || 0).toFixed(2)}
             </Text>

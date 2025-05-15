@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className=" bg-PrimaryColor text-ExtraDarkColor rounded-t-3xl mt-8 md:mt-0">
       <div className="flex flex-col md:flex-row justify-between p-8 md:px-32 px-5">
         <div>
-          <h1 className=" font-semibold text-3xl pb-4">StyleNestle</h1>
+          <h1 className=" font-semibold text-3xl pb-4">FOODSHIFT</h1>
           <div className=" flex gap-5 ml-3">
             <FaFacebook
               size={32}
@@ -105,7 +105,7 @@ export default function Footer() {
               123 Elm Street, Suite 456 Springfield, IL 62701 United States
             </Link>
             <Link to="/" spy={true} smooth={true} duration={500}>
-              fashion@style.com
+              food@shift.com
             </Link>
             <Link to="/" spy={true} smooth={true} duration={500}>
               +123-456-7890

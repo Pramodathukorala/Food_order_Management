@@ -111,8 +111,7 @@ const Cart = () => {
                   />
                   <div className="flex-1 px-4">
                     <h3 className="text-xl font-semibold">{item.title}</h3>
-                    <p className="text-gray-600">Price: ${item.price}</p>
-                    
+
                     <p className="text-gray-600">
                       
                       <span
@@ -122,7 +121,7 @@ const Cart = () => {
                         }}
                         className="w-8 h-8 rounded-full text-xs"
                       >
-                     
+
                       </span>
                     </p>{" "}
                     {/* Display color */}

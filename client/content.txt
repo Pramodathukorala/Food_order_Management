@@ -27,7 +27,7 @@ colors: {
   #footer Component 
 
   123 Elm Street, Suite 456 Springfield, IL 62701 United States
-  fashion@style.com
+  food@shift.com
   +123-456-7890
 
 

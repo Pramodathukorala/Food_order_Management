@@ -10,11 +10,27 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
   const [delivery, setDelivery] = useState(order.deliveryInfo || {});
   const [items, setItems] = useState(order.items || []);
   const [status, setStatus] = useState(order.status || "Pending");
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return !emailRegex.test(value) ? "Invalid email address" : "";
+      case "mobile":
+        const phoneRegex = /^\d{10}$/;
+        return !phoneRegex.test(value) ? "Phone number must be 10 digits" : "";
+      default:
+        return "";
+    }
+  };
 
   const handleInputChange = (e, field, isCustomer = true) => {
     const { name, value } = e.target;
     if (isCustomer) {
       setCustomer({ ...customer, [name]: value });
+      const error = validateField(name, value);
+      setErrors((prev) => ({ ...prev, [name]: error }));
     } else {
       setDelivery({ ...delivery, [name]: value });
     }
@@ -34,6 +50,18 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
   };
 
   const handleUpdate = async () => {
+    const emailError = validateField("email", customer.email);
+    const mobileError = validateField("mobile", customer.mobile);
+
+    if (emailError || mobileError) {
+      setErrors({
+        ...errors,
+        email: emailError,
+        mobile: mobileError,
+      });
+      return;
+    }
+
     try {
       const updatedOrder = {
         ...order,
@@ -98,17 +126,27 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                   name="email"
                   value={customer.email || ""}
                   onChange={(e) => handleInputChange(e, "email")}
-                  className="w-full p-3 border border-secondaryColor rounded mb-2"
+                  className={`w-full p-3 border rounded mb-1 ${
+                    errors.email ? "border-red-500" : "border-secondaryColor"
+                  }`}
                   placeholder="Email"
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mb-2">{errors.email}</p>
+                )}
                 <input
                   type="text"
                   name="mobile"
                   value={customer.mobile || ""}
                   onChange={(e) => handleInputChange(e, "mobile")}
-                  className="w-full p-3 border border-secondaryColor rounded mb-2"
+                  className={`w-full p-3 border rounded mb-1 ${
+                    errors.mobile ? "border-red-500" : "border-secondaryColor"
+                  }`}
                   placeholder="Mobile"
                 />
+                {errors.mobile && (
+                  <p className="text-red-500 text-sm mb-2">{errors.mobile}</p>
+                )}
               </div>
 
               {delivery && delivery.address && (
@@ -152,7 +190,9 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                   className="border border-secondaryColor p-4 mb-4 rounded-lg"
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-semibold text-darkColor">{item.title}</h4>
+                    <h4 className="font-semibold text-darkColor">
+                      {item.title}
+                    </h4>
                     <span className="text-darkColor font-medium">
                       ${(item.price * (item.quantity || 1)).toFixed(2)}
                     </span>
@@ -165,13 +205,19 @@ const EditOrderPopup = ({ order, onClose, onUpdate }) => {
                         min="1"
                         value={item.quantity || 1}
                         onChange={(e) =>
-                          handleItemChange(index, "quantity", parseInt(e.target.value))
+                          handleItemChange(
+                            index,
+                            "quantity",
+                            parseInt(e.target.value)
+                          )
                         }
                         className="w-full p-2 border border-secondaryColor rounded"
                       />
                     </div>
                     <div>
-                      <label className="block mb-1">Special Instructions:</label>
+                      <label className="block mb-1">
+                        Special Instructions:
+                      </label>
                       <textarea
                         value={item.instructions || ""}
                         onChange={(e) =>
